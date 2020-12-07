@@ -3,10 +3,12 @@ from pygame.draw import *
 from random import randint
 import numpy as np
 import matplotlib as mp
+
 from Constants import *
 import var
 from math_functions import *
 from Hero import *
+
 class Enemy:
     '''здесь содержаться все типы врагов и их поведение
     soldier - обычный стрелок

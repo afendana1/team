@@ -3,9 +3,11 @@ from pygame.draw import *
 from random import randint
 import numpy as np
 import matplotlib as mp
+
 from Constants import *
 import var
 from math_functions import *
+
 class Aim:
     '''прицел
      пока нормально не работает '''
@@ -32,8 +34,8 @@ class Hero:
     'игрок'
     def __init__(self):
         self.hp=100
-        self.x=WIDTH//2
-        self.y=HEIGHT//2
+        self.x=number_walls_W*block_size//2
+        self.y=number_walls_H*block_size//2
         self.radius=25
         self.proect_Vx=0
         self.proect_Vy=0
@@ -55,6 +57,7 @@ class Hero:
             self.Vy=self.V*self.proect_Vy/(self.proect_Vx**2 + self.proect_Vy**2)**0.5
             self.x+=self.Vx
             self.y+=self.Vy
+
     def calculate_speed(self):
          if self.proect_Vx**2 + self.proect_Vy**2 > 0:
             self.Vx=self.V*self.proect_Vx/(self.proect_Vx**2 + self.proect_Vy**2)**0.5
@@ -88,6 +91,7 @@ class hero_Weapon:
 
         self.time_last_shoot_fire_sphere=0
         self.time_next_shoot_fire_sphere=20
+
 
 
     def SHOOT(self):
@@ -175,6 +179,7 @@ class hero_Bullet:
         self.type="uzi"
         self.ice_slow=0.5
         self.time_slow_duration=60
+
     def move(self):
         self.x+=self.Vx
         self.y+=self.Vy 
@@ -189,7 +194,7 @@ class fire_floor_surfaces:
         self.debaf_duration=90
         self.tick_time=15
         self.color=RED
-        self.time_exist=30
+        self.time_exist=60
         self.time_for_destroy=0
     def draw(self):
         circle(screen, (self.color), (int(round(self.x-my_map.x)), int(round(self.y-my_map.y))),self.radius)

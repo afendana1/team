@@ -8,39 +8,42 @@ import var
 from math_functions import *
 from Hero import *
 from Enemies import *
-
+from Labirint import *
 
 class Walls():
     def __init__(self):
         self.x=100
         self.y=100
         self.size=50
+        self.can_collision=1
     def draw(self):
         if inter_arena(self.x,self.y)==True:
             rect(screen, (WHITE), (round(self.x-my_map.x),round(self.y-my_map.y), self.size, self.size), )
-    
-        
+    def check(self):
+    	pass
 
-def inter_arena(x,y):
-    '''проверка нахождения внутри арены 
-       True - внутри; False - снаружи'''
-    inter_a=True
-    if distance_to(x,y,hero.x,hero.y)>((WIDTH//2)**2+(HEIGHT//2)**2)**0.5*1.5:
-        inter_a=False
-        
-    return(inter_a)
-def spawner():
+class Doors():
+    def __init__(self):
+        self.x=100
+        self.y=100
+        self.size=50
+        self.can_collision=1
+    def draw(self):
+        if inter_arena(self.x,self.y)==True:
+        	if self.can_collision==1:
+        		rect(screen, (YELLOW), (round(self.x-my_map.x),round(self.y-my_map.y), self.size, self.size), )
+    def check(self):
+    	if var.number_enemies>0:    		
+    		self.can_collision =1
+    	if var.number_enemies==0:
+    		self.can_collision=0
+
+
+
+def spawner(x,y):
     '''спавнер мобов'''
-    if randint(1,100)<100//FPS:
-        e=Enemy()
-        rnd=randint(1,2)
-        if rnd == 1:
-            e.x=randint(1,WIDTH)
-            e.y=randint(0,1)*HEIGHT
-        if rnd == 2:
-            e.x=randint(0,1)*WIDTH
-            e.y=randint(1,HEIGHT)
-  
+    if randint(1,100)<5:
+        e=Enemy()      
         rnd=randint(1,3)
         if rnd==1:
             e.type="soldier" 
@@ -58,90 +61,11 @@ def spawner():
             e.range_to_attack = 300
             e.color=BLUE
         e.now_action="move"
+        e.x=x
+        e.y=y
         ENEMIES.append(e)
-def labirint_constr(i,j,steps):
-    if steps>0:
-        if ROOMS[i][j]!=1:
-            steps-=1
-            ROOMS[i][j]=1
-        rnd=randint(1,4)
-        
-        if rnd==1:
-            if i<number_rooms_H-1:
-                labirint_constr(i+1,j,steps)
-            else:
-                labirint_constr(i,j,steps)
-                
-        if rnd==2:
-            if i>0:
-                labirint_constr(i-1,j,steps)
-            else:
-                labirint_constr(i,j,steps)
-        if rnd==3:
-            if j <number_rooms_W-1:
-                labirint_constr(i,j+1,steps)
-            else:
-                labirint_constr(i,j,steps)
-        if rnd==4:
-            if j>0:
-                labirint_constr(i,j-1,steps)
-            else:
-                labirint_constr(i,j,steps)
 
 
-def create_LABIRINT():
-
-
-
-# генерация комнат
-    labirint_constr(2,2,7)
-
-# создание стен комнат
-    for i in range(number_rooms_H):
-        for j in range(number_rooms_W):
-            if ROOMS[i][j]==1:
-                room_size_x=randint(1,3)
-                room_size_y=randint(1,3)
-                for k in range(room_size_y,room_size-room_size_y):
-                    WALLS[i*room_size+k][j*room_size+room_size_x]=1
-                    WALLS[i*room_size+k][j*room_size+room_size-room_size_x]=1
-                for k in range(room_size_x,room_size-room_size_x):                
-                    WALLS[i*room_size+room_size_y][j*room_size+k]=1
-                    WALLS[i*room_size+room_size-room_size_y][j*room_size+k]=1
-#     создание путей по оси x
-    builder=-1          
-    for i in range(number_rooms_H):
-        for j in range(number_rooms_W-1):
-            if (ROOMS[i][j]==1) and (ROOMS[i][j+1]==1):
-                for k in range(room_size):
-                    if WALLS[i*room_size+room_size//2][j*room_size+room_size//2+k]==1:
-                        builder*=-1
-                        WALLS[i*room_size+room_size//2][j*room_size+room_size//2+k]=3
-                        WALLS[i*room_size+room_size//2+1][j*room_size+room_size//2+k]=3
-                    if builder==1:
-                        WALLS[i*room_size+room_size//2-1][j*room_size+room_size//2+k]=1
-                        WALLS[i*room_size+room_size//2+2][j*room_size+room_size//2+k]=1
-#     создание путей по оси y
-    builder=-1          
-    for j in range(number_rooms_H):
-        for i in range(number_rooms_W-1):
-            if (ROOMS[i][j]==1) and (ROOMS[i+1][j]==1):
-                for k in range(room_size):
-                    if WALLS[i*room_size+room_size//2+k][j*room_size+room_size//2]==1:
-                        builder*=-1
-                        WALLS[i*room_size+room_size//2+k][j*room_size+room_size//2]=3
-                        WALLS[i*room_size+room_size//2+k][j*room_size+room_size//2+1]=3
-                    if builder==1:
-                        WALLS[i*room_size+room_size//2+k][j*room_size+room_size//2-1]=1
-                        WALLS[i*room_size+room_size//2+k][j*room_size+room_size//2+2]=1
-    for i in range(number_walls_H):    
-        for j in range(number_walls_W):
-            if WALLS[i][j]==1:
-                w=Walls()
-                w.x=j*block_size-number_walls_W*block_size//2+WIDTH//2
-                w.y=i*block_size-number_walls_H*block_size//2+HEIGHT//2
-                w.size=block_size
-                physics_WALLS.append(w)
 def check_collision():
     '''проверка столкновний объектов и
        вылета за границы игрового поля'''
@@ -172,15 +96,16 @@ def check_collision():
     for e in ENEMIES[:]:
         for sf in SURFACES:
             if distance_to(e.x,e.y,sf.x,sf.y)<sf.radius:
-                e.time_end_fire=var.TIME+90
-                e.fire_damage=20
+                e.time_end_fire=var.TIME+sf.tick_time
+                e.fire_damage=sf.damage
                
     for e in ENEMIES[:]:
         if e.hp <= 0:
             ENEMIES.remove(e)
-    for h_b in hero_BULLETS[:]: 
-        for w in physics_WALLS:
-             if check_wall_collision(w.x,w.y,w.size,h_b.x,h_b.y,h_b.radius) == True:
+     
+    for w in physics_WALLS:
+    	for h_b in hero_BULLETS[:]:
+             if check_wall_collision(w.x,w.y,w.size,w.size,h_b.x,h_b.y,h_b.radius) == True:
                 if h_b.type == "fire_sphere":
                     sf=fire_floor_surfaces()
                     sf.x=h_b.x
@@ -189,11 +114,20 @@ def check_collision():
                     SURFACES.append(sf)
                 hero_BULLETS.remove(h_b)
                 continue
+    for r in var.Rooms_parametrs:
+    	if check_wall_collision(r.x+block_size,r.y+block_size,r.x_size-block_size,r.y_size-block_size,hero.x,hero.y,-2*hero.radius) == True:
+    		if r.can_spawn ==1:
+	    		for i in range(1,(r.y_size-block_size)//block_size):
+	    			for j in range(1,(r.x_size-block_size)//block_size):
+	    				spawner(j*block_size+r.x,i*block_size+r.y)
+	    		r.can_spawn=0
+
                 
                     
-    for b in BULLETS:  
-        for w in physics_WALLS:
-            if check_wall_collision(w.x,w.y,w.size,b.x,b.y,b.radius) == True:
+    
+    for w in physics_WALLS:
+    	for b in BULLETS[:]:  
+            if check_wall_collision(w.x,w.y,w.size,w.size,b.x,b.y,b.radius) == True:
                     BULLETS.remove(b)
     for b in BULLETS:
         if distance_to(b.x,b.y,hero.x,hero.y)<b.radius+hero.radius:
@@ -217,19 +151,25 @@ def draw():
     hero.draw()
     for h_b in hero_BULLETS:
         h_b.draw()
+    for d in physics_WALLS:
+    	d.check()
     for w in physics_WALLS:
         w.draw()
+
     aim.draw()
 def step():
     '''функция совершающая действия каждый тик. 
     (так же вызывает остальные ежемоментные функции )'''
-    spawner() 
+    # spawner() 
     for sf in SURFACES[:]:
         if var.TIME>sf.time_for_destroy:
             SURFACES.remove(sf)
+    var.number_enemies=0
 
     for e in ENEMIES:
-            e.action()
+    	var.number_enemies+=1
+    	e.action()
+
     for b in BULLETS:
         b.move()
     for h_b in hero_BULLETS:
@@ -240,7 +180,17 @@ def step():
 
 
 create_LABIRINT()
-
+for i in range(number_walls_H):    
+    for j in range(number_walls_W):
+        if WALLS[i][j]==1:
+            w=Walls()
+        if WALLS[i][j]==3:
+            w=Doors()
+        if WALLS[i][j]!=0:   
+            w.x=j*block_size
+            w.y=i*block_size
+            w.size=block_size
+            physics_WALLS.append(w)
 pygame.mouse.set_visible(False)
 # тест
 var.TIME=0
@@ -269,10 +219,11 @@ while not finished:
     hero. calculate_speed()
     if hero.proect_Vx**2+hero.proect_Vy**2!=0:
         for w in physics_WALLS:
-            if check_wall_collision_x(w.x,w.y,w.size,hero.x,hero.y,hero.radius,hero.Vx)==True:
-                hero.proect_Vx=0
-            if check_wall_collision_y(w.x,w.y,w.size,hero.x,hero.y,hero.radius,hero.Vy)==True:
-                hero.proect_Vy=0
+        	if w.can_collision==1:
+	            if check_wall_collision_x(w.x,w.y,w.size,hero.x,hero.y,hero.radius,hero.Vx)==True:
+	                hero.proect_Vx=0
+	            if check_wall_collision_y(w.x,w.y,w.size,hero.x,hero.y,hero.radius,hero.Vy)==True:
+	                hero.proect_Vy=0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
