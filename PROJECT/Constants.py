@@ -19,7 +19,7 @@ MAGENTA = (255, 0, 255)
 CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 WHITE =(255, 255, 255)
-
+monster_background = (0, 114, 188)
 rnd=0
 
 

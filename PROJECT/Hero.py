@@ -2,7 +2,6 @@ import pygame
 from pygame.draw import *
 from random import randint
 import numpy as np
-import matplotlib as mp
 
 from Constants import *
 import var
@@ -17,19 +16,22 @@ class Aim:
         self.size=4
         self.range=300
     def draw(self):
-
 #         if distance_to(hero.x,hero.y,self.x,self.y)<self.range:
-            
             rect(screen, (WHITE), (round(self.x-self.size//2),round(self.y-self.size//2), self.size, self.size), )
             self.mx=self.x
             self.my=self.y
+
+
 class Map:
     def __init__(self):
         self.x=0
         self.y=0
+
     def change_coords(self):
         self.x=hero.x+aim.x//8-WIDTH//2
         self.y=hero.y+aim.y//8-HEIGHT//2
+
+
 class Hero:
     'игрок'
     def __init__(self):
@@ -51,6 +53,7 @@ class Hero:
 
     def draw(self):
         circle(screen, (YELLOW), (round(self.x-my_map.x), round(self.y-my_map.y)), self.radius)
+
     def move(self):
         if self.proect_Vx**2 + self.proect_Vy**2 > 0:
             self.Vx=self.V*self.proect_Vx/(self.proect_Vx**2 + self.proect_Vy**2)**0.5
@@ -63,8 +66,7 @@ class Hero:
             self.Vx=self.V*self.proect_Vx/(self.proect_Vx**2 + self.proect_Vy**2)**0.5
             self.Vy=self.V*self.proect_Vy/(self.proect_Vx**2 + self.proect_Vy**2)**0.5
 
-                
-                
+             
 class hero_Weapon:
     '''оружие героя'''
     def __init__(self):
@@ -91,7 +93,6 @@ class hero_Weapon:
 
         self.time_last_shoot_fire_sphere=0
         self.time_next_shoot_fire_sphere=20
-
 
 
     def SHOOT(self):
@@ -183,8 +184,11 @@ class hero_Bullet:
     def move(self):
         self.x+=self.Vx
         self.y+=self.Vy 
+
     def draw(self):
         circle(screen, (CYAN), (int(round(self.x-my_map.x)), int(round(self.y-my_map.y))),self.radius)
+
+
 class fire_floor_surfaces:
     def __init__ (self):
         self.x=0
@@ -196,8 +200,10 @@ class fire_floor_surfaces:
         self.color=RED
         self.time_exist=60
         self.time_for_destroy=0
+
     def draw(self):
         circle(screen, (self.color), (int(round(self.x-my_map.x)), int(round(self.y-my_map.y))),self.radius)
+
 my_map=Map()
 hero=Hero()
 hero_weapon=hero_Weapon()

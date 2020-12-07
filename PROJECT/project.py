@@ -2,13 +2,15 @@ import pygame
 from pygame.draw import *
 from random import randint
 import numpy as np
-import matplotlib as mp
+from os import path
+
 from Constants import *
 import var
 from math_functions import *
 from Hero import *
 from Enemies import *
 from Labirint import *
+from draw_images import*
 
 class Walls():
     def __init__(self):
@@ -16,11 +18,14 @@ class Walls():
         self.y=100
         self.size=50
         self.can_collision=1
+
     def draw(self):
         if inter_arena(self.x,self.y)==True:
             rect(screen, (WHITE), (round(self.x-my_map.x),round(self.y-my_map.y), self.size, self.size), )
+
     def check(self):
     	pass
+
 
 class Doors():
     def __init__(self):
@@ -28,10 +33,12 @@ class Doors():
         self.y=100
         self.size=50
         self.can_collision=1
+
     def draw(self):
         if inter_arena(self.x,self.y)==True:
         	if self.can_collision==1:
         		rect(screen, (YELLOW), (round(self.x-my_map.x),round(self.y-my_map.y), self.size, self.size), )
+
     def check(self):
     	if var.number_enemies>0:    		
     		self.can_collision =1
@@ -68,14 +75,15 @@ def spawner(x,y,chance):
 
 
 def check_collision():
-    '''проверка столкновний объектов и
-       вылета за границы игрового поля'''
+    '''
+    проверка столкновний объектов и
+    вылета за границы игрового поля
+    '''
     for e in ENEMIES[:]:
         for h_b in hero_BULLETS:
             if distance_to(h_b.x,h_b.y,e.x,e.y)<e.radius+h_b.radius:
-                
                 if h_b.type == "shock":
-                      e.hp -= 100
+                    e.hp -= 100
                 if h_b.type =="uzi":
                     e.hp -= 20
                 if h_b.type == "snipe":
@@ -101,12 +109,12 @@ def check_collision():
                 e.fire_damage=sf.damage
                
     for e in ENEMIES[:]:
-        if e.hp <= 0:
+        if e.now_action == "definitely_die":
             ENEMIES.remove(e)
      
     for w in physics_WALLS:
-    	for h_b in hero_BULLETS[:]:
-             if check_wall_collision(w.x,w.y,w.size,w.size,h_b.x,h_b.y,h_b.radius) == True:
+        for h_b in hero_BULLETS[:]:
+            if check_wall_collision(w.x,w.y,w.size,w.size,h_b.x,h_b.y,h_b.radius) == True:
                 if h_b.type == "fire_sphere":
                     sf=fire_floor_surfaces()
                     sf.x=h_b.x
@@ -115,6 +123,7 @@ def check_collision():
                     SURFACES.append(sf)
                 hero_BULLETS.remove(h_b)
                 continue
+
     var.number_enemies=0
     for e in ENEMIES:
     	var.number_enemies+=1  
@@ -126,14 +135,11 @@ def check_collision():
 		    			for j in range(1,(r.x_size-block_size)//block_size):
 		    				spawner(j*block_size+r.x,i*block_size+r.y,r.can_spawn)
 		    		r.can_spawn-=1
-
-                
-                    
-    
+		    		
     for w in physics_WALLS:
-    	for b in BULLETS[:]:  
+        for b in BULLETS[:]:  
             if check_wall_collision(w.x,w.y,w.size,w.size,b.x,b.y,b.radius) == True:
-                    BULLETS.remove(b)
+                BULLETS.remove(b)
     for b in BULLETS:
         if distance_to(b.x,b.y,hero.x,hero.y)<b.radius+hero.radius:
             BULLETS.remove(b)
@@ -143,6 +149,7 @@ def check_collision():
     for h_b in hero_BULLETS:
         if inter_arena(h_b.x,h_b.y)==False:
             hero_BULLETS.remove(h_b)  
+
         
 def draw():
     '''отрисовка всех объектов. '''
@@ -150,7 +157,6 @@ def draw():
         sf.draw()
     for b in BULLETS:
         b.draw()
-
     for e in ENEMIES:
         e.draw()
     hero.draw()
@@ -160,16 +166,17 @@ def draw():
     	d.check()
     for w in physics_WALLS:
         w.draw()
-
     aim.draw()
+
 def step():
-    '''функция совершающая действия каждый тик. 
-    (так же вызывает остальные ежемоментные функции )'''
+    '''
+    функция совершающая действия каждый тик. 
+    (так же вызывает остальные ежемоментные функции )
+    '''
     # spawner() 
     for sf in SURFACES[:]:
         if var.TIME>sf.time_for_destroy:
             SURFACES.remove(sf)
-
 
     for e in ENEMIES:
     	e.action()
@@ -186,8 +193,6 @@ def step():
     draw()
 
     	
-
-    
 
 
 create_LABIRINT()
@@ -227,7 +232,7 @@ while not finished:
             hero.proect_Vy+=1
     if keys[pygame.K_w]:
             hero.proect_Vy-=1
-    hero. calculate_speed()
+    hero.calculate_speed()
     if hero.proect_Vx**2+hero.proect_Vy**2!=0:
         for w in physics_WALLS:
         	if w.can_collision==1:
