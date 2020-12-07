@@ -40,30 +40,31 @@ class Doors():
 
 
 
-def spawner(x,y):
+def spawner(x,y,chance):
     '''спавнер мобов'''
-    if randint(1,100)<5:
-        e=Enemy()      
-        rnd=randint(1,3)
-        if rnd==1:
-            e.type="soldier" 
-            e.range_to_move = 350
-            e.range_to_attack = 250
-            e.color=MAGENTA
-        if rnd==2:
-            e.type="zombie"
-            e.range_to_move = hero.radius*1.2
-            e.range_to_attack = hero.radius*1.3
-            e.color=GREEN
-        if rnd==3:
-            e.type="mage"
-            e.range_to_move = 400
-            e.range_to_attack = 300
-            e.color=BLUE
-        e.now_action="move"
-        e.x=x
-        e.y=y
-        ENEMIES.append(e)
+    if randint(1,100)<40/(chance+6):
+    	if distance_to(hero.x,hero.y,x,y)>hero.radius+2*block_size:
+	        e=Enemy()      
+	        rnd=randint(1,3)
+	        if rnd==1:
+	            e.type="soldier" 
+	            e.range_to_move = 350
+	            e.range_to_attack = 250
+	            e.color=MAGENTA
+	        if rnd==2:
+	            e.type="zombie"
+	            e.range_to_move = hero.radius*1.2
+	            e.range_to_attack = hero.radius*1.3
+	            e.color=GREEN
+	        if rnd==3:
+	            e.type="mage"
+	            e.range_to_move = 400
+	            e.range_to_attack = 300
+	            e.color=BLUE
+	        e.now_action="move"
+	        e.x=x
+	        e.y=y
+	        ENEMIES.append(e)
 
 
 def check_collision():
@@ -116,11 +117,12 @@ def check_collision():
                 continue
     for r in var.Rooms_parametrs:
     	if check_wall_collision(r.x+block_size,r.y+block_size,r.x_size-block_size,r.y_size-block_size,hero.x,hero.y,-2*hero.radius) == True:
-    		if r.can_spawn ==1:
-	    		for i in range(1,(r.y_size-block_size)//block_size):
-	    			for j in range(1,(r.x_size-block_size)//block_size):
-	    				spawner(j*block_size+r.x,i*block_size+r.y)
-	    		r.can_spawn=0
+    		if var.number_enemies==0:
+	    		if r.can_spawn >0:
+		    		for i in range(1,(r.y_size-block_size)//block_size):
+		    			for j in range(1,(r.x_size-block_size)//block_size):
+		    				spawner(j*block_size+r.x,i*block_size+r.y,r.can_spawn)
+		    		r.can_spawn-=1
 
                 
                     
@@ -164,18 +166,24 @@ def step():
     for sf in SURFACES[:]:
         if var.TIME>sf.time_for_destroy:
             SURFACES.remove(sf)
-    var.number_enemies=0
+
 
     for e in ENEMIES:
-    	var.number_enemies+=1
     	e.action()
 
     for b in BULLETS:
         b.move()
     for h_b in hero_BULLETS:
         h_b.move()
+  	
     check_collision()
+    var.number_enemies=0
+    for e in ENEMIES:
+    	var.number_enemies+=1    	
     draw()
+
+    	
+
     
 
 

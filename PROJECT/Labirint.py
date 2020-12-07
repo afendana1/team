@@ -59,6 +59,7 @@ def create_LABIRINT():
                 r.y_size=(room_size-room_size_y*2)*block_size
                 r.x=(j*room_size+room_size_x)*block_size
                 r.y=(i*room_size+room_size_y)*block_size
+                r.can_spawn=randint(2,3)
                 if (i==2) and (j ==2):
                     r.can_spawn=0
                 print(r.x,r.y,r.x_size,r.y_size,r.can_spawn)
