@@ -115,8 +115,11 @@ def check_collision():
                     SURFACES.append(sf)
                 hero_BULLETS.remove(h_b)
                 continue
+    var.number_enemies=0
+    for e in ENEMIES:
+    	var.number_enemies+=1  
     for r in var.Rooms_parametrs:
-    	if check_wall_collision(r.x+block_size,r.y+block_size,r.x_size-block_size,r.y_size-block_size,hero.x,hero.y,-2*hero.radius) == True:
+    	if check_wall_collision(r.x+block_size,r.y+block_size,r.x_size-block_size,r.y_size-block_size,hero.x,hero.y,-hero.radius-1) == True:
     		if var.number_enemies==0:
 	    		if r.can_spawn >0:
 		    		for i in range(1,(r.y_size-block_size)//block_size):
