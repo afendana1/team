@@ -38,6 +38,7 @@ class Enemy:
         self.image_index=0
         self.Vx=0
         self.current_animation=[]
+        self.anim_speed=0
 
     def move(self):
         self.y+=self.V*sin(self.x,self.y,hero.x,hero.y)*(1-self.slow)
@@ -76,8 +77,14 @@ class Enemy:
         if cos(self.x,self.y,hero.x,hero.y) < 0:
             self.image = pygame.transform.flip(self.image, True, False)
         screen.blit(self.image, (self.x - my_map.x - 25, self.y - my_map.y - 25))
-        self.image_index += 1
-        
+
+        if self.anim_speed >= 3:
+            self.anim_speed = 0
+        self.anim_speed += 1
+        if self.anim_speed == 1:
+            self.image_index += 1
+
+
     def SHOOT(self):
         '''
         стрельба врагов
@@ -132,17 +139,24 @@ class Dead:
         self.time_for_destroy=0
         self.time_exist=30
         self.image_index=0
+        self.anim_speed=0
 
     def draw(self):
         self.current_animation = zombie_die
         if self.image_index >= len(self.current_animation):
             return
         self.image = self.current_animation[self.image_index]
-        self.image_index += 1
+        if cos(self.x,self.y,hero.x,hero.y) < 0:
+            self.image = pygame.transform.flip(self.image, True, False)
+        screen.blit(self.image, (self.x - my_map.x - 25, self.y - my_map.y - 25))
 
-
+        if self.anim_speed >= 3:
+            self.anim_speed = 0
+        self.anim_speed += 1
+        if self.anim_speed == 1:
+            self.image_index += 1
+                    
         
-
         
 class Bullet:
     '''пули ВРАГОВ'''

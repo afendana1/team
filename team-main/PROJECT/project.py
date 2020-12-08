@@ -166,7 +166,6 @@ def draw():
         sf.draw()
     for d in Deads:
     	d.draw()
-    	print(1)
     for b in BULLETS:
         b.draw()
     for e in ENEMIES:
