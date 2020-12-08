@@ -65,19 +65,11 @@ class Enemy:
         if distance_to(self.x,self.y,hero.x ,hero.y )<self.range_to_attack:
             self.now_action="attack"
 
-        if self.hp <= 0:
-            self.now_action="die"
-
     def draw(self):
         if self.now_action == "move":
             self.current_animation = zombie_move
         if self.now_action == "attack":
             self.current_animation = zombie_attack
-        if self.now_action == "die":
-            self.current_animation = zombie_die
-            if self.image_index >= len(zombie_die):
-                self.now_action = "definitely_die"
-                return
         if self.image_index >= len(self.current_animation):
             self.image_index = 0
         self.image = self.current_animation[self.image_index]
@@ -126,6 +118,25 @@ class Enemy:
             e.color=GREEN
             ENEMIES.append(e)
             self.time_last_spawn=var.TIME
+
+
+class Dead:
+    '''
+    класс трупов для
+    анимации смерти врагов
+    '''
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.type = "zombie"
+
+    def draw(self):
+        self.current_animation = zombie_die
+        if self.image_index >= len(self.current_animation):
+            return
+        self.image = self.current_animation[self.image_index]
+        self.image_index += 1
+        
 
         
 class Bullet:

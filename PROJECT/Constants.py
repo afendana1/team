@@ -10,6 +10,7 @@ physics_WALLS=[]
 
 SURFACES=[]
 ENEMIES=[]
+DEAD=[]
 FPS=30
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)

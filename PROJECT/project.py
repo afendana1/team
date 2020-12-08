@@ -12,6 +12,7 @@ from Enemies import *
 from Labirint import *
 from draw_images import*
 
+
 class Walls():
     def __init__(self):
         self.x=100
@@ -109,7 +110,7 @@ def check_collision():
                 e.fire_damage=sf.damage
                
     for e in ENEMIES[:]:
-        if e.now_action == "definitely_die":
+        if e.hp <= 0:
             ENEMIES.remove(e)
      
     for w in physics_WALLS:
