@@ -1,78 +1,37 @@
-import pygame
-from pygame.draw import *
-from random import randint
-import numpy as np
-from os import path
-
-from Constants import *
+import Constants
+import Enemies
+import Hero
+import Labirint
+import draw_images
+import math_functions
 import var
-from math_functions import *
-from Hero import *
-from Enemies import *
-from Labirint import *
-from draw_images import*
 
 
-class Walls():
-    def __init__(self):
-        self.x=100
-        self.y=100
-        self.size=50
-        self.can_collision=1
-
-    def draw(self):
-        if inter_arena(self.x,self.y)==True:
-            rect(screen, (WHITE), (round(self.x-my_map.x),round(self.y-my_map.y), self.size, self.size), )
-
-    def check(self):
-    	pass
-
-
-class Doors():
-    def __init__(self):
-        self.x=100
-        self.y=100
-        self.size=50
-        self.can_collision=1
-
-    def draw(self):
-        if inter_arena(self.x,self.y)==True:
-        	if self.can_collision==1:
-        		rect(screen, (YELLOW), (round(self.x-my_map.x),round(self.y-my_map.y), self.size, self.size), )
-
-    def check(self):
-    	if var.number_enemies>0:    		
-    		self.can_collision =1
-    	if var.number_enemies==0:
-    		self.can_collision=0
-
-
-
-def spawner(x,y,chance):
+def spawner(x, y, chance):
     '''спавнер мобов'''
-    if randint(1,100)<40/(chance+6):
-    	if distance_to(hero.x,hero.y,x,y)>hero.radius+2*block_size:
-	        e=Enemy()      
-	        rnd=randint(1,3)
-	        if rnd==1:
-	            e.type="soldier" 
-	            e.range_to_move = 350
-	            e.range_to_attack = 250
-	            e.color=MAGENTA
-	        if rnd==2:
-	            e.type="zombie"
-	            e.range_to_move = hero.radius*1.2
-	            e.range_to_attack = hero.radius*1.3
-	            e.color=GREEN
-	        if rnd==3:
-	            e.type="mage"
-	            e.range_to_move = 400
-	            e.range_to_attack = 300
-	            e.color=BLUE
-	        e.now_action="move"
-	        e.x=x
-	        e.y=y
-	        ENEMIES.append(e)
+    if Labirint.randint(1, 100) < 40 / ((chance + 4) * 4)*(var.Hard)/10:
+        if math_functions.distance_to(Hero.hero.x, Hero.hero.y, x, y) > Hero.hero.radius + 2 * Constants.block_size:
+            e = Enemies.Enemy()
+            rnd = Labirint.randint(1, 3)
+            if rnd == 1:
+                e.type = "soldier"
+                e.range_to_move = 3250
+                e.range_to_attack = 250
+                e.color = Constants.MAGENTA
+            if rnd == 2:
+                e.type = "zombie"
+                e.range_to_move = Hero.hero.radius * 1.2
+                e.range_to_attack = Hero.hero.radius * 1.3
+                e.color = Constants.GREEN
+            if rnd == 3:
+                e.type = "mage"
+                e.range_to_move = 400
+                e.range_to_attack = 300
+                e.color = Constants.BLUE
+            e.now_action = "move"
+            e.x = x
+            e.y = y
+            Constants.ENEMIES.append(e)
 
 
 def check_collision():
@@ -80,12 +39,12 @@ def check_collision():
     проверка столкновний объектов и
     вылета за границы игрового поля
     '''
-    for e in ENEMIES[:]:
-        for h_b in hero_BULLETS:
-            if distance_to(h_b.x,h_b.y,e.x,e.y)<e.radius+h_b.radius:
+    for e in Constants.ENEMIES[:]:
+        for h_b in Constants.hero_BULLETS:
+            if math_functions.distance_to(h_b.x, h_b.y, e.x, e.y) < e.radius + h_b.radius:
                 if h_b.type == "shock":
                     e.hp -= 100
-                if h_b.type =="uzi":
+                if h_b.type == "uzi":
                     e.hp -= 20
                 if h_b.type == "snipe":
                     e.hp -= 100
@@ -93,219 +52,229 @@ def check_collision():
                     e.hp -= 20
                 if h_b.type == "ice_sphere":
                     e.hp -= 30
-                    e.slow=h_b.ice_slow
-                    e.time_end_slow=h_b.time_slow_duration+var.TIME
+                    e.slow = h_b.ice_slow
+                    e.time_end_slow = h_b.time_slow_duration + Labirint.var.TIME
                 if h_b.type == "fire_sphere":
-                    sf=fire_floor_surfaces()
-                    sf.x=h_b.x
-                    sf.y=h_b.y
-                    sf.time_for_destroy=var.TIME+sf.time_exist
-                    SURFACES.append(sf)
-                hero_BULLETS.remove(h_b)
+                    sf = Hero.fire_floor_surfaces()
+                    sf.x = h_b.x
+                    sf.y = h_b.y
+                    sf.time_for_destroy = Labirint.var.TIME + sf.time_exist
+                    Constants.SURFACES.append(sf)
+                Constants.hero_BULLETS.remove(h_b)
 
-    for e in ENEMIES[:]:
-        for sf in SURFACES:
-            if distance_to(e.x,e.y,sf.x,sf.y)<sf.radius:
-                e.time_end_fire=var.TIME+sf.tick_time
-                e.fire_damage=sf.damage
+    for e in Constants.ENEMIES[:]:
+        for sf in Constants.SURFACES:
+            if max(e.x - sf.x, e.y - sf.y) < sf.radius:
+                e.time_end_fire = Labirint.var.TIME + sf.tick_time
+                e.fire_damage = sf.damage
 
-               
-    for e in ENEMIES[:]:
+    for e in Constants.ENEMIES[:]:
         if e.hp <= 0:
-        	d=Dead()
-        	d.x=e.x
-        	d.y=e.y
-        	d.time_for_destroy=var.TIME+d.time_exist
-        	Deads.append(d)
-        	ENEMIES.remove(e)
+            d = Enemies.Dead()
+            d.x = e.x
+            d.y = e.y
+            d.type = e.type
+            d.time_for_destroy = Labirint.var.TIME + d.time_exist
+            Constants.Deads.append(d)
+            Constants.ENEMIES.remove(e)
 
-     
-    for w in physics_WALLS:
-        for h_b in hero_BULLETS[:]:
-            if check_wall_collision(w.x,w.y,w.size,w.size,h_b.x,h_b.y,h_b.radius) == True:
-                if h_b.type == "fire_sphere":
-                    sf=fire_floor_surfaces()
-                    sf.x=h_b.x
-                    sf.y=h_b.y
-                    sf.time_for_destroy=var.TIME+sf.time_exist
-                    SURFACES.append(sf)
-                hero_BULLETS.remove(h_b)
-                continue
+    for w in Labirint.var.physics_WALLS:
+        if w.can_collision == 1:
+            for h_b in Constants.hero_BULLETS[:]:
+                if math_functions.check_wall_collision(w.x, w.y, w.size, w.size, h_b.x, h_b.y, h_b.radius) == True:
+                    if h_b.type == "fire_sphere":
+                        sf = Hero.fire_floor_surfaces()
+                        sf.x = h_b.x
+                        sf.y = h_b.y
+                        sf.time_for_destroy = Labirint.var.TIME + sf.time_exist
+                        Constants.SURFACES.append(sf)
+                    Constants.hero_BULLETS.remove(h_b)
+                    continue
 
-    var.number_enemies=0
-    for e in ENEMIES:
-    	var.number_enemies+=1  
-    for r in var.Rooms_parametrs:
-    	if check_wall_collision(r.x+block_size,r.y+block_size,r.x_size-block_size,r.y_size-block_size,hero.x,hero.y,-hero.radius-1) == True:
-    		if var.number_enemies==0:
-	    		if r.can_spawn >0:
-		    		for i in range(1,(r.y_size-block_size)//block_size):
-		    			for j in range(1,(r.x_size-block_size)//block_size):
-		    				spawner(j*block_size+r.x,i*block_size+r.y,r.can_spawn)
-		    		r.can_spawn-=1
-		    		
-    for w in physics_WALLS:
-        for b in BULLETS[:]:  
-            if check_wall_collision(w.x,w.y,w.size,w.size,b.x,b.y,b.radius) == True:
-                BULLETS.remove(b)
-    for b in BULLETS:
-        if distance_to(b.x,b.y,hero.x,hero.y)<b.radius+hero.radius:
-            BULLETS.remove(b)
-        if inter_arena(b.x,b.y)==False:
-            if b in BULLETS:
-                BULLETS.remove(b) 
-    for h_b in hero_BULLETS:
-        if inter_arena(h_b.x,h_b.y)==False:
-            hero_BULLETS.remove(h_b)  
+    Labirint.var.number_enemies = 0
+    for e in Constants.ENEMIES:
+        Labirint.var.number_enemies += 1
+    for r in Labirint.var.rooms_parameters:
+        if math_functions.check_wall_collision(r.x + Constants.block_size, r.y + Constants.block_size, r.x_size - Constants.block_size, r.y_size - Constants.block_size,
+                                               Hero.hero.x, Hero.hero.y, -Hero.hero.radius - 1) == True:
+            if Labirint.var.number_enemies == 0:
+                if r.can_spawn > 0:
+                    for i in range(1, (r.y_size - Constants.block_size) // Constants.block_size):
+                        for j in range(1, (r.x_size - Constants.block_size) // Constants.block_size):
+                            spawner(j * Constants.block_size + r.x, i * Constants.block_size + r.y, r.can_spawn)
+                    r.can_spawn -= 1
 
-        
+    for w in Labirint.var.physics_WALLS:
+        if w.can_collision == 1:
+            for b in Constants.BULLETS[:]:
+                if math_functions.check_wall_collision(w.x, w.y, w.size, w.size, b.x, b.y, b.radius) == True:
+                    Constants.BULLETS.remove(b)
+    for b in Constants.BULLETS:
+        if math_functions.distance_to(b.x, b.y, Hero.hero.x, Hero.hero.y) < b.radius + Hero.hero.radius:
+            Constants.BULLETS.remove(b)
+        if math_functions.inter_arena(b.x, b.y) == False:
+            if b in Constants.BULLETS:
+                Constants.BULLETS.remove(b)
+    for h_b in Constants.hero_BULLETS:
+        if math_functions.inter_arena(h_b.x, h_b.y) == False:
+            Constants.hero_BULLETS.remove(h_b)
+
+
 def draw():
     '''отрисовка всех объектов. '''
-
-    for sf in SURFACES:
+    Labirint.my_portal.draw()
+    for sf in Constants.SURFACES:
         sf.draw()
-    for d in Deads:
-    	d.draw()
-    for b in BULLETS:
+    for d in Constants.Deads:
+        d.draw()
+    for b in Constants.BULLETS:
         b.draw()
-    for e in ENEMIES:
+    for c in var.Chests:
+    	c.draw()
+    for e in Constants.ENEMIES:
         e.draw()
-    hero.draw()
-    for h_b in hero_BULLETS:
+    for item in var.Items:
+    	item.draw()
+    	print(1)
+    Hero.hero.draw()
+    for h_b in Constants.hero_BULLETS:
         h_b.draw()
-    for d in physics_WALLS:
-    	d.check()
-    for w in physics_WALLS:
+    for d in Labirint.var.physics_WALLS:
+        d.check()
+    for w in Labirint.var.physics_WALLS:
         w.draw()
-    aim.draw()
+    Hero.aim.draw()
+    Hero.healthbar.draw()
+
 
 def step():
-
     '''
     функция совершающая действия каждый тик. 
     (так же вызывает остальные ежемоментные функции )
     '''
-    # spawner() 
-    # for sf in SURFACES[:]:
-    #     if var.TIME>sf.time_for_destroy:
-    #         SURFACES.remove(sf)
+    
+    for sf in Constants.SURFACES[:]:
+        if var.TIME>sf.time_for_destroy:
+            Constants.SURFACES.remove(sf)
 
-    for e in ENEMIES:	
-    	e.action()
-    for d in Deads:
-    	if d.time_for_destroy<var.TIME:
-    		Deads.remove(d)
+    for e in Constants.ENEMIES:
+        e.action()
+    for d in Constants.Deads:
+        if d.time_for_destroy < var.TIME:
+            Constants.Deads.remove(d)
 
-
-    for b in BULLETS:
+    for b in Constants.BULLETS:
         b.move()
-    for h_b in hero_BULLETS:
+    for h_b in Constants.hero_BULLETS:
         h_b.move()
-  	
+
     check_collision()
-    var.number_enemies=0
-    for e in ENEMIES:
-    	var.number_enemies+=1    	
+    var.number_enemies = 0
+    for e in Constants.ENEMIES:
+        var.number_enemies += 1
     draw()
 
-    	
 
-
-create_LABIRINT()
-for i in range(number_walls_H):    
-    for j in range(number_walls_W):
-        if WALLS[i][j]==1:
-            w=Walls()
-        if WALLS[i][j]==3:
-            w=Doors()
-        if WALLS[i][j]!=0:   
-            w.x=j*block_size
-            w.y=i*block_size
-            w.size=block_size
-            physics_WALLS.append(w)
-pygame.mouse.set_visible(False)
+draw_images.pygame.mouse.set_visible(False)
 # тест
-var.TIME=0
-clock = pygame.time.Clock()
+Labirint.var.TIME = 0
+clock = draw_images.pygame.time.Clock()
 finished = False
-pygame.init()
+draw_images.pygame.init()
 
 while not finished:
-    clock.tick(FPS)
-    var.TIME+=1
-    
-     #  движение :
-    if hero.shooting==1:
-        hero_weapon.SHOOT()
-    keys = pygame.key.get_pressed()
-    hero.proect_Vx=0
-    hero.proect_Vy=0
-    if keys[pygame.K_a]:
-            hero.proect_Vx-=1
-    if keys[pygame.K_d]:
-            hero.proect_Vx+=1
-    if keys[pygame.K_s]:
-            hero.proect_Vy+=1
-    if keys[pygame.K_w]:
-            hero.proect_Vy-=1
-    hero.calculate_speed()
-    if hero.proect_Vx**2+hero.proect_Vy**2!=0:
-        for w in physics_WALLS:
-        	if w.can_collision==1:
-	            if check_wall_collision_x(w.x,w.y,w.size,hero.x,hero.y,hero.radius,hero.Vx)==True:
-	                hero.proect_Vx=0
-	            if check_wall_collision_y(w.x,w.y,w.size,hero.x,hero.y,hero.radius,hero.Vy)==True:
-	                hero.proect_Vy=0
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+    clock.tick(Constants.FPS)
+    Labirint.var.TIME += 1
+
+    #  движение :
+    if Hero.hero.shooting == 1:
+        Hero.hero_select_weapon.SHOOT()
+    keys = draw_images.pygame.key.get_pressed()
+    Hero.hero.proect_Vx = 0
+    Hero.hero.proect_Vy = 0
+    if keys[draw_images.pygame.K_a]:
+        Hero.hero.proect_Vx -= 1
+    if keys[draw_images.pygame.K_d]:
+        Hero.hero.proect_Vx += 1
+    if keys[draw_images.pygame.K_s]:
+        Hero.hero.proect_Vy += 1
+    if keys[draw_images.pygame.K_w]:
+        Hero.hero.proect_Vy -= 1
+    Hero.hero.calculate_speed()
+    if Hero.hero.proect_Vx ** 2 + Hero.hero.proect_Vy ** 2 != 0:
+        for w in Labirint.var.physics_WALLS:
+            if w.can_collision == 1:
+                if math_functions.check_wall_collision_x(w.x, w.y, w.size, Hero.hero.x, Hero.hero.y, Hero.hero.radius, Hero.hero.Vx) == True:
+                    Hero.hero.proect_Vx = 0
+                if math_functions.check_wall_collision_y(w.x, w.y, w.size, Hero.hero.x, Hero.hero.y, Hero.hero.radius, Hero.hero.Vy) == True:
+                    Hero.hero.proect_Vy = 0
+    for event in draw_images.pygame.event.get():
+        if event.type == draw_images.pygame.QUIT:
             finished = True
 
-
-            
-            
-#       стрельба:
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        #       стрельба:
+        if event.type == draw_images.pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                    hero.shooting=1
+                Hero.hero.shooting = 1
 
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == draw_images.pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                     hero.shooting=0
-        if event.type == pygame.MOUSEMOTION:
-            var.mouse_proect_x=cos(hero.x,hero.y,event.pos[0]+my_map.x,event.pos[1]+my_map.y) #var.mouse_proect_x - cos угла между мышкой и героем
-            var.mouse_proect_y=sin(hero.x,hero.y,event.pos[0]+my_map.x,event.pos[1]+my_map.y)  #var.mouse_proect_y-sin угла между мышкой и героем  
-            aim.x, aim.y = event.pos[0], event.pos[1]  #кооринаты прицела
-            
-            #переключение оружия:
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_1:
-                hero_weapon.weapon_type="uzi"
-                
-            if event.key == pygame.K_2:
-                hero_weapon.weapon_type="snipe"
-                
-            if event.key == pygame.K_3:
-                hero_weapon.weapon_type="shock"
-                
-            if event.key == pygame.K_4:
-                hero_weapon.weapon_type="gun"
-            if event.key == pygame.K_5:
-                hero_weapon.weapon_type="ice_sphere"
-            if event.key == pygame.K_6:
-                hero_weapon.weapon_type="fire_sphere"
+                Hero.hero.shooting = 0
+        if event.type == draw_images.pygame.MOUSEMOTION:
+            var.mouse_projection_x = math_functions.cos(Hero.hero.x, Hero.hero.y, event.pos[0] + Hero.my_map.x,
+                                                             event.pos[1] + Hero.my_map.y)  # var.mouse_proect_x - cos угла между мышкой и героем
+            var.mouse_projection_y = math_functions.sin(Hero.hero.x, Hero.hero.y, event.pos[0] + Hero.my_map.x,
+                                                             event.pos[1] + Hero.my_map.y)  # var.mouse_proect_y-sin угла между мышкой и героем
+            Hero.aim.x, Hero.aim.y = event.pos[0], event.pos[1]  # кооринаты прицела
 
-                
-            if event.key == pygame.K_SPACE:
-                if var.TIME>hero.blink_cd+hero.last_use_blink:
-                    hero.x=aim.mx+my_map.x
-                    hero.y=aim.my+my_map.y
-                    hero.last_use_blink=var.TIME
+            # переключение оружия:
+        if event.type == draw_images.pygame.KEYDOWN:
+        #     if event.key == draw_images.pygame.K_1:
+        #         Hero.hero_weapon1.weapon_type = "uzi"
 
-                
+        #     if event.key == draw_images.pygame.K_2:
+        #         Hero.hero_weapon1.weapon_type = "snipe"
 
-    hero.move()      
-    my_map.change_coords()
+        #     if event.key == draw_images.pygame.K_3:
+        #         Hero.hero_weapon1.weapon_type = "shock"
+
+        #     if event.key == draw_images.pygame.K_4:
+        #         Hero.hero_weapon1.weapon_type = "gun"
+        #     if event.key == draw_images.pygame.K_5:
+        #         Hero.hero_weapon1.weapon_type = "ice_sphere"
+        #     if event.key == draw_images.pygame.K_6:
+        #         Hero.hero_weapon1.weapon_type = "fire_sphere"
+            if event.key == draw_images.pygame.K_1:
+            	if  Hero.hero_weapon2 == Hero.hero_select_weapon:
+	                Hero.hero_weapon2 = Hero.hero_select_weapon
+	                Hero.hero_select_weapon = Hero.hero_weapon1
+
+            if event.key == draw_images.pygame.K_2:
+            	if  Hero.hero_weapon1 == Hero.hero_select_weapon:
+	                Hero.hero_weapon1 = Hero.hero_select_weapon
+	                Hero.hero_select_weapon = Hero.hero_weapon2
+
+            if event.key == draw_images.pygame.K_SPACE:
+                if Labirint.var.TIME > Hero.hero.blink_cd + Hero.hero.last_use_blink:
+                    Hero.hero.x = Hero.aim.mx + Hero.my_map.x
+                    Hero.hero.y = Hero.aim.my + Hero.my_map.y
+                    Hero.hero.last_use_blink = Labirint.var.TIME
+            if event.key == draw_images.pygame.K_e:
+                if math_functions.distance_to(Hero.hero.x, Hero.hero.y, Labirint.my_portal.x, Labirint.my_portal.y) < Labirint.my_portal.radius - Hero.hero.radius:
+                    Labirint.my_portal.teleport()
+                else:
+                	for c in var.Chests:
+                		if math_functions.distance_to(Hero.hero.x,Hero.hero.y,c.x+c.size//2,c.y+c.size//2)<Hero.hero.radius*2:
+                			c.drop_item()
+                	for item in var.Items[:]:
+                		if math_functions.distance_to(Hero.hero.x,Hero.hero.y,item.x,item.y)<Hero.hero.radius*2: 
+                			item.take_weapon()
+                			var.Items.remove(item)
+
+
+    Hero.hero.move()
+    Hero.my_map.change_coords()
     step()
-    pygame.display.update()
-    screen.fill(BLACK)
-pygame.quit()
+    draw_images.pygame.display.update()
+    Constants.screen.fill(Constants.BLACK)
+draw_images.pygame.quit()
