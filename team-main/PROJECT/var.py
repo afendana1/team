@@ -7,3 +7,4 @@ physics_WALLS = []
 Items=[]
 Chests=[]
 Hard=10
+game_room="menu"

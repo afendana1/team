@@ -42,6 +42,8 @@ class Portal:
 
             var.rooms_parameters.clear()
             var.physics_WALLS.clear()
+            var.Chests.clear()
+            var.Items.clear()
             var.Hard+=3
             create_LABIRINT()
         for i in range(Constants.number_walls_H):

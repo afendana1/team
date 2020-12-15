@@ -8,6 +8,16 @@ import Constants
 import var
 import draw_images
 
+class Play_button:
+	def __init__(self):
+		self.x=Constants.WIDTH//6
+		self.y=Constants.HEIGHT//4
+		self.x_size=Constants.WIDTH//2
+		self.y_size=Constants.HEIGHT//6
+	def draw(self):
+		rect(Constants.screen, Constants.GREEN, (self.x, self.y, self.x_size, self.y_size), )
+
+
 
 class Aim:
     '''прицел
@@ -64,8 +74,10 @@ class Hero:
             self.current_animation = draw_images.hero_move
             
             #!!!Как повернуть?
-            if self.Vx < 0:
-                self.image = pygame.transform.flip(self.image, True, False)
+        if (var.mouse_projection_x < 0) and (var.TIME>30):
+            print(1)
+            self.image = pygame.transform.flip(self.image, True, False)
+
                 
         else:
             self.current_animation = draw_images.hero_stand
@@ -108,7 +120,7 @@ class hero_Weapon:
         self.time_next_shoot_snipe = 45
 
         self.time_last_shoot_shock = 0
-        self.time_next_shoot_shock = 5
+        self.time_next_shoot_shock = 60
 
         self.time_last_shoot_gun = 0
         self.time_next_shoot_gun = 5
@@ -243,13 +255,13 @@ class Healthbar:
             self.color = Constants.YELLOW
         if hero.hp <= 20:
             self.color = Constants.RED
-        self.lenth =hero.hp * Constants.WIDTH / 100 
+        self.lenth =(hero.hp /100)* (Constants.WIDTH / 7 )
         pygame.draw.rect(Constants.screen, (self.color), ((self.x, self.y), (self.lenth, self.height)))
 
 
 
 
-
+play_button=Play_button()
 my_map = Map()
 hero = Hero()
 hero_weapon1 = hero_Weapon()
