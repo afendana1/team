@@ -109,13 +109,13 @@ class hero_Weapon:
         self.weapon_type = "gun"
 
         self.time_last_shoot_uzi = 0
-        self.time_next_shoot_uzi = 1
+        self.time_next_shoot_uzi = 2
 
         self.time_last_shoot_snipe = 0
         self.time_next_shoot_snipe = 45
 
         self.time_last_shoot_shock = 0
-        self.time_next_shoot_shock = 60
+        self.time_next_shoot_shock = 300
 
         self.time_last_shoot_gun = 0
         self.time_next_shoot_gun = 5
@@ -261,7 +261,6 @@ my_map = Map()
 hero = Hero()
 hero_weapon1 = hero_Weapon()
 hero_weapon2 = hero_Weapon()
-hero_weapon1.weapon_type="uzi"
 hero_select_weapon=hero_Weapon()
 hero_select_weapon=hero_weapon1
 aim = Aim()

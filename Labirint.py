@@ -191,7 +191,7 @@ def create_LABIRINT():
                 r.can_spawn = randint(2, 3)
                 if (i == 2) and (j == 2):
                     r.can_spawn = 0
-                print(r.x, r.y, r.x_size, r.y_size, r.can_spawn)
+               
                 var.rooms_parameters.append(r)
                 for k in range(room_size_y, Constants.room_size - room_size_y):
                     Constants.WALLS[i * Constants.room_size + k][j * Constants.room_size + room_size_x] = 1

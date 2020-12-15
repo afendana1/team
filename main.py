@@ -132,12 +132,12 @@ def draw():
     for b in Constants.BULLETS:
         b.draw()
     for c in var.Chests:
-    	c.draw()
+        c.draw()
     for e in Constants.ENEMIES:
         e.draw()
     for item in var.Items:
-    	item.draw()
-    	
+        item.draw()
+        
     Hero.hero.draw()
     for h_b in Constants.hero_BULLETS:
         h_b.draw()
@@ -177,30 +177,30 @@ def step():
     draw()
 
 def start_game():
-	var.game_room="game"
-	Hero.healthbar.color=Constants.GREEN
-	Hero.hero.hp=100
-	Hero.hero.x = Constants.number_walls_W * Constants.block_size // 2
-	Hero.hero.y = Constants.number_walls_H * Constants.block_size // 2
-	Labirint.my_portal.teleport()
+    var.game_room="game"
+    Hero.healthbar.color=Constants.GREEN
+    Hero.hero.hp=100
+    Hero.hero.x = Constants.number_walls_W * Constants.block_size // 2
+    Hero.hero.y = Constants.number_walls_H * Constants.block_size // 2
+    Labirint.my_portal.teleport()
 
 def end_game():
-	var.game_room="menu"
-	draw_images.pygame.mouse.set_visible(True)
-	Constants.ENEMIES.clear()
-	Constants.BULLETS.clear()
-	Constants.hero_BULLETS.clear()
-	for i in range(Constants.number_rooms_H):
-		for j in range(Constants.number_rooms_W):
-				Constants.ROOMS[j][i] = 0
-	for i in range(Constants.number_walls_H):
-	    for j in range(Constants.number_walls_W):
-	        Constants.WALLS[j][i] = 0            
-	var.rooms_parameters.clear()
-	var.physics_WALLS.clear()
-	var.Chests.clear()
-	var.Items.clear()
-	var.Hard=10
+    var.game_room="menu"
+    draw_images.pygame.mouse.set_visible(True)
+    Constants.ENEMIES.clear()
+    Constants.BULLETS.clear()
+    Constants.hero_BULLETS.clear()
+    for i in range(Constants.number_rooms_H):
+        for j in range(Constants.number_rooms_W):
+                Constants.ROOMS[j][i] = 0
+    for i in range(Constants.number_walls_H):
+        for j in range(Constants.number_walls_W):
+            Constants.WALLS[j][i] = 0            
+    var.rooms_parameters.clear()
+    var.physics_WALLS.clear()
+    var.Chests.clear()
+    var.Items.clear()
+    var.Hard=10
 
 clock = draw_images.pygame.time.Clock()
 finished = False
@@ -213,98 +213,98 @@ while not finished:
         Hero.play_button.draw()
 
     if var.game_room=="game":
-	    #  движение :
-	    if Hero.hero.shooting == 1:
-	        Hero.hero_select_weapon.SHOOT()
-	    keys = draw_images.pygame.key.get_pressed()
-	    Hero.hero.proect_Vx = 0
-	    Hero.hero.proect_Vy = 0
-	    if keys[draw_images.pygame.K_a]:
-	        Hero.hero.proect_Vx -= 1
-	    if keys[draw_images.pygame.K_d]:
-	        Hero.hero.proect_Vx += 1
-	    if keys[draw_images.pygame.K_s]:
-	        Hero.hero.proect_Vy += 1
-	    if keys[draw_images.pygame.K_w]:
-	        Hero.hero.proect_Vy -= 1
-	    Hero.hero.calculate_speed()
-	    if Hero.hero.proect_Vx ** 2 + Hero.hero.proect_Vy ** 2 != 0:
-	        for w in Labirint.var.physics_WALLS:
-	            if w.can_collision == 1:
-	                if math_functions.check_wall_collision_x(w.x, w.y, w.size, Hero.hero.x, Hero.hero.y, Hero.hero.radius, Hero.hero.Vx) == True:
-	                    Hero.hero.proect_Vx = 0
-	                if math_functions.check_wall_collision_y(w.x, w.y, w.size, Hero.hero.x, Hero.hero.y, Hero.hero.radius, Hero.hero.Vy) == True:
-	                    Hero.hero.proect_Vy = 0
+        #  движение :
+        if Hero.hero.shooting == 1:
+            Hero.hero_select_weapon.SHOOT()
+        keys = draw_images.pygame.key.get_pressed()
+        Hero.hero.proect_Vx = 0
+        Hero.hero.proect_Vy = 0
+        if keys[draw_images.pygame.K_a]:
+            Hero.hero.proect_Vx -= 1
+        if keys[draw_images.pygame.K_d]:
+            Hero.hero.proect_Vx += 1
+        if keys[draw_images.pygame.K_s]:
+            Hero.hero.proect_Vy += 1
+        if keys[draw_images.pygame.K_w]:
+            Hero.hero.proect_Vy -= 1
+        Hero.hero.calculate_speed()
+        if Hero.hero.proect_Vx ** 2 + Hero.hero.proect_Vy ** 2 != 0:
+            for w in Labirint.var.physics_WALLS:
+                if w.can_collision == 1:
+                    if math_functions.check_wall_collision_x(w.x, w.y, w.size, Hero.hero.x, Hero.hero.y, Hero.hero.radius, Hero.hero.Vx) == True:
+                        Hero.hero.proect_Vx = 0
+                    if math_functions.check_wall_collision_y(w.x, w.y, w.size, Hero.hero.x, Hero.hero.y, Hero.hero.radius, Hero.hero.Vy) == True:
+                        Hero.hero.proect_Vy = 0
     for event in draw_images.pygame.event.get():
         if event.type == draw_images.pygame.QUIT:
             finished = True
         if var.game_room=="menu":
             if event.type == draw_images.pygame.MOUSEBUTTONDOWN:
-	            if event.button == 1:
-	                if math_functions.check_wall_collision(Hero.play_button.x,Hero.play_button.y,Hero.play_button.x_size,Hero.play_button.y_size, event.pos[0],event.pos[1],3):
-	                    draw_images.pygame.mouse.set_visible(False)
-	                    start_game()
+                if event.button == 1:
+                    if math_functions.check_wall_collision(Hero.play_button.x,Hero.play_button.y,Hero.play_button.x_size,Hero.play_button.y_size, event.pos[0],event.pos[1],3):
+                        draw_images.pygame.mouse.set_visible(False)
+                        start_game()
 
         if var.game_room=="game":
 
-	        #       стрельба:
-	        if event.type == draw_images.pygame.MOUSEBUTTONDOWN:
-	            if event.button == 1:
-	                Hero.hero.shooting = 1
+            #       стрельба:
+            if event.type == draw_images.pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Hero.hero.shooting = 1
 
-	        if event.type == draw_images.pygame.MOUSEBUTTONUP:
-	            if event.button == 1:
-	                Hero.hero.shooting = 0
-	        if event.type == draw_images.pygame.MOUSEMOTION:
-	            var.mouse_projection_x = math_functions.cos(Hero.hero.x, Hero.hero.y, event.pos[0] + Hero.my_map.x,
-	                                                             event.pos[1] + Hero.my_map.y)  # var.mouse_proect_x - cos угла между мышкой и героем
-	            var.mouse_projection_y = math_functions.sin(Hero.hero.x, Hero.hero.y, event.pos[0] + Hero.my_map.x,
-	                                                             event.pos[1] + Hero.my_map.y)  # var.mouse_proect_y-sin угла между мышкой и героем
-	            Hero.aim.x, Hero.aim.y = event.pos[0], event.pos[1]  # кооринаты прицела
+            if event.type == draw_images.pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    Hero.hero.shooting = 0
+            if event.type == draw_images.pygame.MOUSEMOTION:
+                var.mouse_projection_x = math_functions.cos(Hero.hero.x, Hero.hero.y, event.pos[0] + Hero.my_map.x,
+                                                                 event.pos[1] + Hero.my_map.y)  # var.mouse_proect_x - cos угла между мышкой и героем
+                var.mouse_projection_y = math_functions.sin(Hero.hero.x, Hero.hero.y, event.pos[0] + Hero.my_map.x,
+                                                                 event.pos[1] + Hero.my_map.y)  # var.mouse_proect_y-sin угла между мышкой и героем
+                Hero.aim.x, Hero.aim.y = event.pos[0], event.pos[1]  # кооринаты прицела
 
-	            # переключение оружия:
+                # переключение оружия:
         if event.type == draw_images.pygame.KEYDOWN:
             if event.key == draw_images.pygame.K_BACKSPACE:
-        	    draw_images.pygame.quit()
+                draw_images.pygame.quit()
 
             if var.game_room=="game":
-	            if event.key == draw_images.pygame.K_1:
-	            	if  Hero.hero_weapon2 == Hero.hero_select_weapon:
-		                Hero.hero_weapon2 = Hero.hero_select_weapon
-		                Hero.hero_select_weapon = Hero.hero_weapon1
+                if event.key == draw_images.pygame.K_1:
+                    if  Hero.hero_weapon2 == Hero.hero_select_weapon:
+                        Hero.hero_weapon2 = Hero.hero_select_weapon
+                        Hero.hero_select_weapon = Hero.hero_weapon1
 
-	            if event.key == draw_images.pygame.K_2:
-	            	if  Hero.hero_weapon1 == Hero.hero_select_weapon:
-		                Hero.hero_weapon1 = Hero.hero_select_weapon
-		                Hero.hero_select_weapon = Hero.hero_weapon2
+                if event.key == draw_images.pygame.K_2:
+                    if  Hero.hero_weapon1 == Hero.hero_select_weapon:
+                        Hero.hero_weapon1 = Hero.hero_select_weapon
+                        Hero.hero_select_weapon = Hero.hero_weapon2
 
-	            if event.key == draw_images.pygame.K_SPACE:
-	                if Labirint.var.TIME > Hero.hero.blink_cd + Hero.hero.last_use_blink:
-	                    Hero.hero.x = Hero.aim.mx + Hero.my_map.x
-	                    Hero.hero.y = Hero.aim.my + Hero.my_map.y
-	                    Hero.hero.last_use_blink = Labirint.var.TIME
-	            if event.key == draw_images.pygame.K_ESCAPE:    
-        	        if var.game_room=="game":
-        	            end_game()       
-	            if event.key == draw_images.pygame.K_e:
-	                if math_functions.distance_to(Hero.hero.x, Hero.hero.y, Labirint.my_portal.x, Labirint.my_portal.y) < Labirint.my_portal.radius - Hero.hero.radius:
-	                    Labirint.my_portal.teleport()
-	                else:
-	                	for c in var.Chests:
-	                		if math_functions.distance_to(Hero.hero.x,Hero.hero.y,c.x+c.size//2,c.y+c.size//2)<Hero.hero.radius*2:
-	                			c.drop_item()
-	                	for item in var.Items[:]:
-	                		if math_functions.distance_to(Hero.hero.x,Hero.hero.y,item.x,item.y)<Hero.hero.radius*2: 
-	                			item.take_weapon()
-	                			var.Items.remove(item)
+                if event.key == draw_images.pygame.K_SPACE:
+                    if Labirint.var.TIME > Hero.hero.blink_cd + Hero.hero.last_use_blink:
+                        Hero.hero.x = Hero.aim.mx + Hero.my_map.x
+                        Hero.hero.y = Hero.aim.my + Hero.my_map.y
+                        Hero.hero.last_use_blink = Labirint.var.TIME
+                if event.key == draw_images.pygame.K_ESCAPE:
+                        if var.game_room=="game":
+                            end_game()       
+                if event.key == draw_images.pygame.K_e:
+                    if math_functions.distance_to(Hero.hero.x, Hero.hero.y, Labirint.my_portal.x, Labirint.my_portal.y) < Labirint.my_portal.radius - Hero.hero.radius:
+                        Labirint.my_portal.teleport()
+                    else:
+                        for c in var.Chests:
+                            if math_functions.distance_to(Hero.hero.x,Hero.hero.y,c.x+c.size//2,c.y+c.size//2)<Hero.hero.radius*2:
+                                c.drop_item()
+                        for item in var.Items[:]:
+                            if math_functions.distance_to(Hero.hero.x,Hero.hero.y,item.x,item.y)<Hero.hero.radius*2: 
+                                item.take_weapon()
+                                var.Items.remove(item)
 
 
 
     if var.game_room=="game": 
 
-	    Hero.hero.move()
-	    Hero.my_map.change_coords()
-	    step()
+        Hero.hero.move()
+        Hero.my_map.change_coords()
+        step()
     draw_images.pygame.display.update()
     Constants.screen.fill(Constants.BLACK)
 draw_images.pygame.quit()
