@@ -34,7 +34,7 @@ def spawner(x, y, chance):
             Constants.ENEMIES.append(e)
 
 
-def check_collision():
+def check_damage():
     '''
     проверка столкновний объектов и
     вылета за границы игрового поля
@@ -90,7 +90,7 @@ def check_collision():
                         Constants.SURFACES.append(sf)
                     Constants.hero_BULLETS.remove(h_b)
                     continue
-
+def check_collision():
     Labirint.var.number_enemies = 0
     for e in Constants.ENEMIES:
         Labirint.var.number_enemies += 1
@@ -99,8 +99,8 @@ def check_collision():
                                                Hero.hero.x, Hero.hero.y, -Hero.hero.radius - 1) == True:
             if Labirint.var.number_enemies == 0:
                 if r.can_spawn > 0:
-                    for i in range(1, (r.y_size - Constants.block_size) // Constants.block_size):
-                        for j in range(1, (r.x_size - Constants.block_size) // Constants.block_size):
+                    for i in range(2, (r.y_size - Constants.block_size) // Constants.block_size):
+                        for j in range(2, (r.x_size - Constants.block_size) // Constants.block_size):
                             spawner(j * Constants.block_size + r.x, i * Constants.block_size + r.y, r.can_spawn)
                     r.can_spawn -= 1
 
@@ -109,16 +109,17 @@ def check_collision():
             for b in Constants.BULLETS[:]:
                 if math_functions.check_wall_collision(w.x, w.y, w.size, w.size, b.x, b.y, b.radius) == True:
                     Constants.BULLETS.remove(b)
-    for b in Constants.BULLETS:
+    for b in Constants.BULLETS[:]:
         if math_functions.distance_to(b.x, b.y, Hero.hero.x, Hero.hero.y) < b.radius + Hero.hero.radius:
             Hero.hero.hp-=20
             Constants.BULLETS.remove(b)
+            if Hero.hero.hp<=0:
+                end_game()
+            
         if math_functions.inter_arena(b.x, b.y) == False:
             if b in Constants.BULLETS:
                 Constants.BULLETS.remove(b)
-    for h_b in Constants.hero_BULLETS:
-        if math_functions.inter_arena(h_b.x, h_b.y) == False:
-            Constants.hero_BULLETS.remove(h_b)
+
 
 
 def draw():
@@ -168,17 +169,39 @@ def step():
         b.move()
     for h_b in Constants.hero_BULLETS:
         h_b.move()
-
+    check_damage()   
     check_collision()
     var.number_enemies = 0
     for e in Constants.ENEMIES:
         var.number_enemies += 1
     draw()
 
+def start_game():
+	var.game_room="game"
+	Hero.healthbar.color=Constants.GREEN
+	Hero.hero.hp=100
+	Hero.hero.x = Constants.number_walls_W * Constants.block_size // 2
+	Hero.hero.y = Constants.number_walls_H * Constants.block_size // 2
+	Labirint.my_portal.teleport()
 
+def end_game():
+	var.game_room="menu"
+	draw_images.pygame.mouse.set_visible(True)
+	Constants.ENEMIES.clear()
+	Constants.BULLETS.clear()
+	Constants.hero_BULLETS.clear()
+	for i in range(Constants.number_rooms_H):
+		for j in range(Constants.number_rooms_W):
+				Constants.ROOMS[j][i] = 0
+	for i in range(Constants.number_walls_H):
+	    for j in range(Constants.number_walls_W):
+	        Constants.WALLS[j][i] = 0            
+	var.rooms_parameters.clear()
+	var.physics_WALLS.clear()
+	var.Chests.clear()
+	var.Items.clear()
+	var.Hard=10
 
-# тест
-Labirint.var.TIME = 0
 clock = draw_images.pygame.time.Clock()
 finished = False
 draw_images.pygame.init()
@@ -220,7 +243,7 @@ while not finished:
 	            if event.button == 1:
 	                if math_functions.check_wall_collision(Hero.play_button.x,Hero.play_button.y,Hero.play_button.x_size,Hero.play_button.y_size, event.pos[0],event.pos[1],3):
 	                    draw_images.pygame.mouse.set_visible(False)
-	                    var.game_room="game"
+	                    start_game()
 
         if var.game_room=="game":
 

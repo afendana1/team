@@ -39,7 +39,7 @@ class Portal:
             for i in range(Constants.number_walls_H):
                 for j in range(Constants.number_walls_W):
                     Constants.WALLS[j][i] = 0
-
+            
             var.rooms_parameters.clear()
             var.physics_WALLS.clear()
             var.Chests.clear()
