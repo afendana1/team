@@ -2,8 +2,6 @@ import pygame
 
 loose = 0
 distance_to_mouse = 0
-WIDTH = 1500
-HEIGHT = 1000
 BULLETS = []
 hero_BULLETS = []
 
@@ -37,4 +35,6 @@ for i in range(number_rooms_H):
 for i in range(number_walls_H):
     WALLS.append([0] * number_walls_H)
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+WIDTH = screen.get_width()
+HEIGHT = screen.get_height()
 
