@@ -71,20 +71,15 @@ class Hero:
 
     def draw(self):
         if self.proect_Vx != 0 or self.proect_Vy != 0:
-            self.current_animation = draw_images.hero_move
-            
-            #!!!Как повернуть?
-        if (var.mouse_projection_x < 0) and (var.TIME>30):
-            print(1)
-            self.image = pygame.transform.flip(self.image, True, False)
-
-                
+            self.current_animation = draw_images.hero_move 
         else:
             self.current_animation = draw_images.hero_stand
 
         if self.image_index >= len(self.current_animation):
             self.image_index = 0
         self.image = self.current_animation[self.image_index]
+        if (var.mouse_projection_x < 0) and (var.TIME>30):
+            self.image = pygame.transform.flip(self.image, True, False)
         Constants.screen.blit(self.image, (self.x - my_map.x - 65, self.y - my_map.y - 80))
 
         if self.anim_speed >= 3:

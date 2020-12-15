@@ -36,5 +36,5 @@ for i in range(number_rooms_H):
     ROOMS.append([0] * number_rooms_W)
 for i in range(number_walls_H):
     WALLS.append([0] * number_walls_H)
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
